@@ -12,7 +12,7 @@
 ;; and limitations under the License.
 (defproject com.climate/squeedo "1.0.2-SNAPSHOT"
   :description "Squeedo: The sexiest message consumer ever (™)"
-  :url "http://github.com/TheClimateCorporation/squeedo/"
+  :url "http://github.com/err/squeedo/"
   :min-lein-version "2.0.0"
   :license {:name "Apache License Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0"
