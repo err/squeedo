@@ -17,7 +17,8 @@
     [com.climate.squeedo.sqs :as sqs]
     [com.climate.squeedo.test-utils :refer [generate-queue-name with-temporary-queues]]
     [clojure.tools.reader.edn :as edn]
-    [cheshire.core :as json]
+    [clojure.data.json :as json]
+    #_[cheshire.core :as json]
     [cemerick.bandalore :as band])
   (:import
     (com.amazonaws.services.sqs.model
@@ -94,7 +95,7 @@
       (let [{:keys [client queue-url] :as conn} (sqs/mk-connection queue-name)]
         (is (= {"maxReceiveCount"     3
                 "deadLetterTargetArn" (get (band/queue-attrs client dl-queue-name) "QueueArn")}
-               (json/decode
+               (json/read-str
                  (get (band/queue-attrs client queue-name) "RedrivePolicy")))))
 
       (testing "configure dead letter queue attributes"
@@ -123,7 +124,7 @@
         (let [{:keys [client queue-url] :as conn} (sqs/mk-connection queue-name)]
           (is (= {"maxReceiveCount"     3
                   "deadLetterTargetArn" (get (band/queue-attrs client dl-queue-name) "QueueArn")}
-                 (json/decode
+                 (json/read-str
                    (get (band/queue-attrs client queue-name) "RedrivePolicy")))))))))
 
 (deftest ^:integration test-multiple-formats
@@ -134,11 +135,11 @@
           test-object {:entry1 "this is entry 1"
                        :entry2 ["this" "is" "entry" "2"]}]
       (testing "Write and read json"
-        (let [json-object (json/generate-string test-object)]
+        (let [json-object (json/write-str test-object)]
           (sqs/enqueue connection-1 json-object)
           (let [msg (dequeue-1 connection-1)
                 body (:body msg)
-                parsed-body (json/parse-string body)]
+                parsed-body (json/read-str body)]
             (is (= json-object parsed-body)))))
       (testing "Write and read plain text"
         (let [test-string "this is a test string"]
@@ -189,9 +190,9 @@
                 input-message  {:final-msg {:ayy "lmao"}}
                 _ (sqs/enqueue connection-1 input-message
                                :message-attributes {:some-attribute "some-value"}
-                               :serialization-fn json/generate-string)
+                               :serialization-fn json/write-str)
                 msg (dequeue-1 connection-3)]
-            (is (= (json/generate-string input-message) (:body msg)))
+            (is (= (json/write-str input-message) (:body msg)))
             (is (= "some-value" (:some-attribute (:message-attributes msg))))
             (sqs/ack connection-3 msg)))))))
 

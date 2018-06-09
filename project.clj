@@ -20,7 +20,7 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/tools.logging "0.4.0"]
                  [org.clojure/core.async "0.4.474"]
-                 [cheshire "5.8.0"]
+                 [org.clojure/data.json "0.2.6"]
                  [com.amazonaws/aws-java-sdk-sqs "1.11.306"]]
 
   :profiles {:dev {:global-vars {*warn-on-reflection* true}

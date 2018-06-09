@@ -1,7 +1,7 @@
 (ns com.climate.squeedo.sqs-consumer.middleware
-  (:require
-    [clojure.tools.logging :as log]
-    [cheshire.core :as json]))
+  (:require [clojure.tools.logging :as log]
+            [clojure.data.json :as json]
+            #_[cheshire.core :as json]))
 
 (defn wrap-deserialization-fn
   "Deserialize a message body using f"
@@ -12,7 +12,7 @@
 (defn wrap-deserialize-json
   "Deserialize a JSON encoded message body"
   [handler]
-  (wrap-deserialization-fn handler #(json/decode % true)))
+  (wrap-deserialization-fn handler #(json/read-str % :key-fn keyword)))
 
 (defn wrap-uncaught-exception-logger
   "Log uncaught exceptions that occur during the consumer handler.

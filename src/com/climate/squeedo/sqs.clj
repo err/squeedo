@@ -13,7 +13,7 @@
 (ns com.climate.squeedo.sqs
   (:require
     [clojure.tools.logging :as log]
-    [cheshire.core :as json])
+    [clojure.data.json :as json])
   (:import
     (com.amazonaws.services.sqs.model
       CreateQueueRequest
@@ -80,9 +80,9 @@
                       (.getAttributes)
                       (get "QueueArn"))]
     {"RedrivePolicy"
-     ; yes, this is really necessary.
-     (json/generate-string {"maxReceiveCount"     maximum-retries
-                            "deadLetterTargetArn" queue-arn})}))
+     ;; yes, this is really necessary.
+     (json/write-str {"maxReceiveCount"     maximum-retries
+                      "deadLetterTargetArn" queue-arn})}))
 
 (defn- set-attributes
   "Set queue attributes for the speecified queue URL.
